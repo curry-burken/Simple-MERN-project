@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import Product from './models/product.model.js';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -15,10 +16,38 @@ app.listen(port, () => {
     connectDB();
 });
 
+//ROOT PAGE
 app.get("/",(req,res)=>{
     res.send("<h1>test</h1>");
 });
 
+//TO FETCH DETAILS OF A SINGLE PRODUCT
+app.get("/products/:id", async (req,res) => {
+    try{
+        const{id} = req.params;
+        if(!mongoose.Types.ObjectId.isValid(id)){
+            return res.status(404).json({message:"Product not found"});
+        }
+        const product = await Product.findById(id);
+        res.status(200).json(product);
+    }
+    catch(error){
+        res.json({message:error.message});
+    }
+});
+
+//TO FETCH DETAILS OF ALL PRODUCTS
+app.get("/products", async (req,res) => {
+    try{
+        const products = await Product.find({});
+        res.status(200).json({success:true,message:products});
+    }
+    catch(error){
+        res.status(500).json({success:false,message:error.message});
+    }
+});
+
+//TO CREATE A NEW PRODUCT
 app.post("/products", async (req, res) => {
     const product = req.body;
     if(!product.name || !product.price || !product.image) {
@@ -32,6 +61,34 @@ app.post("/products", async (req, res) => {
     catch(error) {
         console.error("Error creating product:", error);
         res.status(500).json({success:false, message:error.message});
+    }
+});
+
+//TO MODIFY AN ALREADY EXISTING PRODUCT
+app.put("/products/:id", async(req,res) => {
+    try{
+        const {id} = req.params;
+        if(!mongoose.Types.ObjectId.isValid(id)){
+            return res.status(404).json({message:"Product not found"});
+        }
+        const product = req.body;
+        const updatedProduct = await Product.findByIdAndUpdate(id, product, {new:true});
+        res.status(200).json({success:200,message:"Product updated",data:updatedProduct})
+    }
+    catch(error){
+        res.status(500).json({success:false,message:error.message});
+    }
+});
+
+//TO DELETE AN ALREADY EXISTING PRODUCT
+app.delete("/products/:id", async (req,res) => {
+    const {id} = req.params;
+    try{
+        await Product.findByIdAndDelete(id);
+        res.status(200).json({success:true,message:"Product Deleted"});
+    }
+    catch (error){
+        res.status(404).json({success:false, message:"Product not found"});
     }
 });
 
