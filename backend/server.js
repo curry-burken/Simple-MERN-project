@@ -1,21 +1,37 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import connectDB from './config/db.js';
+import Product from './models/product.model.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.join(__dirname, '../.env') });
+dotenv.config();
 
 const app = express();
 
-const port = process.env.PORT || process.env.PORT2;
+app.use(express.json()); // Middleware to parse JSON bodies
+
+const port = process.env.PORT_1 || process.env.PORT_2;
 
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    connectDB();
 });
 
 app.get("/",(req,res)=>{
     res.send("<h1>test</h1>");
 });
+
+app.post("/products", async (req, res) => {
+    const product = req.body;
+    if(!product.name || !product.price || !product.image) {
+        return res.status(400).json({success:false,message:"All fields are required"});
+    }
+    const newProduct = new Product(product)
+    try{
+        await newProduct.save();
+        res.status(201).json({success:true, data: newProduct});
+    }
+    catch(error) {
+        console.error("Error creating product:", error);
+        res.status(500).json({success:false, message:error.message});
+    }
+});
+
