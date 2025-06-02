@@ -79,6 +79,31 @@ export const useProductStore = create((set) => ({
         catch(error) {
             console.error("Error deleting product:", error);
         }
+    },
+    updateProduct: async (pid, updatedProduct) => {
+        try {
+            const response = await fetch(`${FETCHED_API_URL}/${pid}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updatedProduct)
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to update product");
+            }
+            const data = await response.json();
+            set((state) => ({
+                products: state.products.map(product => 
+                    product._id === pid ? data.data : product
+                )
+            }));
+            return { success: true, message: "Product updated successfully" };
+        } catch (error) {
+            console.error("Error updating product:", error);
+            return { success: false, message: "Failed to update product" };
+        }
     }
 }));
 
