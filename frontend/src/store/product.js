@@ -32,6 +32,26 @@ export const useProductStore = create((set) => ({
             console.error("Error creating product:", error);
             return { success: false, message: "Failed to connect to server" };
         }
+    },
+    fetchProducts: async () => {
+        try {
+            console.log("Fetching products from:", FETCHED_API_URL);
+            const response = await fetch(FETCHED_API_URL,{
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const data = await response.json();
+            console.log("Fetched products:", data.message);
+            set({ products: data.message });
+            // if (!response.ok) {
+            //     throw new Error("Failed to fetch products");
+            // }
+        }
+        catch (error) {
+            console.error("Error fetching products:", error);
+        }
     }
 }));
 
