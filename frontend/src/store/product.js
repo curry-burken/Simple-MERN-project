@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-const FETCHED_API_URL = import.meta.env.VITE_API_URL_1 || import.meta.env.VITE_API_URL_2;
+const FETCHED_API_URL = import.meta.env.VITE_API_URL;
 
 export const useProductStore = create((set) => ({
     products:[],

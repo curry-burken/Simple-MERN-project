@@ -14,7 +14,7 @@ app.use(express.json()); // Middleware to parse JSON bodies
 
 app.use('/products', productRoutes); // Use the product routes defined in product.route.js
 
-const port = process.env.BACKEND_PORT_1 || process.env.BACKEND_PORT_2;
+const port = process.env.BACKEND_PORT;
 
 app.listen(port, () => {
     connectDB();
