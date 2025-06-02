@@ -52,6 +52,33 @@ export const useProductStore = create((set) => ({
         catch (error) {
             console.error("Error fetching products:", error);
         }
+    },
+    deleteProduct: async (pid) => {
+        try {
+            const response = await fetch(`${FETCHED_API_URL}/${pid}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to delete product");
+            }
+            const data = await response.json();
+            if (!data.success) {
+                return { success: false, message: data.message };
+            }
+
+            // Update the UI immediately after deletion without refetching manually
+            set((state) => ({
+                products: state.products.filter(product => product._id !== pid)
+            }));
+            return { success: true, message: "Product deleted successfully" };
+        }
+        catch(error) {
+            console.error("Error deleting product:", error);
+        }
     }
 }));
 
