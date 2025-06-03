@@ -12,7 +12,7 @@ app.use(cors({ origin: process.env.FRONTEND_URL })); //This allows CORS requests
 
 app.use(express.json()); // Middleware to parse JSON bodies
 
-app.use('/products', productRoutes); // Use the product routes defined in product.route.js
+app.use('/api/products', productRoutes); // Use the product routes defined in product.route.js
 
 const port = process.env.BACKEND_PORT;
 
