@@ -8,7 +8,7 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({ origin: process.env.FRONTEND_URL })); //This allows CORS requests from the frontend URL specified in the .env file 
+app.use(cors({ origin: "*" })); //This allows CORS requests from the frontend URL specified in the .env file 
 
 app.use(express.json()); // Middleware to parse JSON bodies
 
